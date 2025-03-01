@@ -1,8 +1,15 @@
+"""Daniel Felipe Moreno Echeverry"""
+"""28/02/2025"""
+"""danielfelipok@gmail.com"""
+"""Programa Inventario Tienda"""
+"""Permite ingresar datos de productos para luego muestra un resumen de ellos."""
+
+
 import unittest
 
 class Producto:
   
-    """Esta es la clase que va a represenyar el producto de la tienda"""
+    """Esta es la clase que va a representar el producto de la tienda"""
 
     def __init__(self, nombre: str, precio: int, cantidad: int):
         self.nombre = nombre
