@@ -1,48 +1,110 @@
 from datetime import datetime
 
-class Mascota:
-    def __init__(self, nombre, edad, raza):
+
+class Producto:
+    """
+    Esta clase representa un producto que se puede guardar en el inventario.
+    """
+
+    def __init__(self, nombre, precio, cantidad, descripcion, clasificacion):
+        """
+        Aquí se guardan todos los datos del producto cuando se crea.
+        """
         self.nombre = nombre
-        self.edad = edad
-        self.raza = raza
+        self.precio = float(precio)
+        self.cantidad = int(cantidad)
+        self.descripcion = descripcion
+        self.clasificacion = clasificacion
         self.fecha_ingreso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def mostrar_info(self):
-        clase = "Perro" if isinstance(self, Perro) else "Gato"
-        return f"|{clase:<6} |{self.nombre:<8} |{self.edad:<5} años |{self.raza:<12} |{self.fecha_ingreso} |"
+        """
+        Devuelve un texto con todos los datos del producto en una sola línea, bien ordenado.
+        """
+        return (
+            f"|{self.nombre:<15} |{self.precio:<10.2f} |{self.cantidad:<8} "
+            f"|{self.descripcion:<30} |{self.clasificacion:<15} |{self.fecha_ingreso} |"
+        )
 
-class Perro(Mascota):
-    def __init__(self, nombre, edad, raza):
-        super().__init__(nombre, edad, raza)
 
-class Gato(Mascota):
-    def __init__(self, nombre, edad, raza):
-        super().__init__(nombre, edad, raza)
+def ingresar_productos():
+    """
+    Esta función pregunta al usuario cuántos productos quiere ingresar y luego pide los datos de cada uno.
+    """
+    productos = []
+    cantidad = int(input("¿Cuántos productos va a ingresar?\n> "))
 
-mascotas = []
+    for i in range(cantidad):
+        print(f"\nProducto {i+1}")
+        nombre = input("> Nombre del producto:\n< ").strip()
+        precio = input("> Precio del producto:\n< ").strip()
+        cantidad_prod = input("> Cantidad en inventario:\n< ").strip()
+        descripcion = input("> Descripción del producto:\n< ").strip()
+        clasificacion = input("> Clasificación (ej: alimentos, aseo, licor):\n< ").strip()
 
-cantidad = int(input("¿Cuántas mascotas va a ingresar?\n> "))
+        # Creamos el objeto producto con los datos que ingresó el usuario
+        producto = Producto(nombre, precio, cantidad_prod, descripcion, clasificacion)
+        productos.append(producto)
 
-for i in range(cantidad):
-    print(f"Mascota {i+1}, ¿qué clase es (P)erro o (G)ato?")
-    clase = input("< ").strip().lower()
+    return productos
 
-    while clase not in ('p', 'g'):
-        print("Opción inválida. Ingrese 'P' para Perro o 'G' para Gato.")
-        clase = input("< ").strip().lower()
 
-    es_perro = clase == 'p'
-    tipo = "Perro" if es_perro else "Gato"
+def mostrar_resumen_productos(productos):
+    """
+    Esta función muestra en pantalla todos los productos ingresados, uno por uno.
+    """
+    print("\nResumen de productos:")
+    print("|Nombre          |Precio     |Cantidad |Descripción                   "
+          "|Clasificación     |Fecha de ingreso           |")
+    print("|--------------- |---------- |-------- |------------------------------"
+          "|------------------|---------------------------|")
+    for producto in productos:
+        print(producto.mostrar_info())
 
-    nombre = input(f"> ¿Cuál es el nombre del {tipo}?\n< ").strip()
-    edad = input(f"> ¿Qué edad tiene '{nombre}'?\n< ").strip()
-    raza = input(f"> ¿De qué raza es '{nombre}'?\n< ").strip()
 
-    mascota = Perro(nombre, edad, raza) if es_perro else Gato(nombre, edad, raza)
-    mascotas.append(mascota)
+def calcular_total_por_clasificacion(productos):
+    """
+    Aquí se calcula cuánto valen todos los productos por cada clasificación.
+    Ej: cuánto valen todos los productos de aseo juntos, o todos los de alimentos.
+    """
+    resumen_clasificacion = {}
 
-print("\nResumen:")
-print("|Clase  |Nombre   |Edad  |Raza         |Fecha de ingreso            |")
-print("|------ |-------- |----- |------------ |----------------------------|")
-for mascota in mascotas:
-    print(mascota.mostrar_info())
+    for producto in productos:
+        total = producto.precio * producto.cantidad
+
+        if producto.clasificacion in resumen_clasificacion:
+            resumen_clasificacion[producto.clasificacion] += total
+        else:
+            resumen_clasificacion[producto.clasificacion] = total
+
+    print("\nResumen del precio total por clasificación:")
+    for clasificacion, total in resumen_clasificacion.items():
+        print(f"- {clasificacion:<15}: ${total:,.2f}")
+
+
+def main():
+    """
+    Esta es la función principal. Aquí se juntan todas las partes del programa.
+    """
+    productos = ingresar_productos()
+    mostrar_resumen_productos(productos)
+    calcular_total_por_clasificacion(productos)
+
+
+# Prueba rápida para asegurarnos de que la clase Producto funciona como debería
+def test_producto():
+    """
+    Test sencillo para comprobar que la clase Producto guarda bien los datos.
+    """
+    p = Producto("Jabón", 2500, 4, "Para manos", "aseo")
+    assert p.nombre == "Jabón"
+    assert p.precio == 2500
+    assert p.cantidad == 4
+    assert p.descripcion == "Para manos"
+    assert p.clasificacion == "aseo"
+    print(" Test de producto OK")
+
+
+if __name__ == "__main__":
+    test_producto()  # Ejecuta el test antes de empezar
+    main()           # Inicia el programa normal
